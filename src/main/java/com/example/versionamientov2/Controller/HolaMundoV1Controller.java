@@ -6,18 +6,29 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/v1")
 public class HolaMundoV1Controller {
-    @GetMapping
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('Administrador')")
     public String saludo(@AuthenticationPrincipal Jwt jwt) {
         var usuario= jwt.getClaims();
-        return "hola mundo - correccion bug v1.1.1 informacion de autenticacion: "+usuario;
+        return "hola admin "+ usuario;
     }
-    @PostMapping
+    @GetMapping("/usuario")
+    @PreAuthorize("hasRole('Usuario')")
     public String despedida() {
-        return "adios v1.1.0";
+        return "adios roles usuarios";
+    }
+    @GetMapping("/ambos-roles")
+    @PreAuthorize("hasAnyRole('Administrador', 'Usuario')")
+    public String holaAmbosRoles() {
+        return "aceptando roles admin - user ";
+    }
+    @GetMapping("/todos-roles")
+    public String holaRoles() {
+        return "aceptando todos los roles";
     }
     @GetMapping("/public")
     public String publicos() {
